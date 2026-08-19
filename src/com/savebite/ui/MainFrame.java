@@ -8,27 +8,46 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import com.savebite.service.MarketplaceService;
+
 public class MainFrame extends JFrame {
 
-    public MainFrame() {
+    private final MarketplaceService marketplaceService;
+
+    public MainFrame(MarketplaceService marketplaceService) {
+
+        this.marketplaceService = marketplaceService;
 
         setTitle("SaveBite - Surplus Food Marketplace");
         setSize(1000, 650);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        createInterface();
+        showDashboard();
     }
 
-    private void createInterface() {
+    private void showDashboard() {
 
-        setLayout(new BorderLayout());
+        JPanel mainPanel = new JPanel(new BorderLayout());
 
-        add(createHeader(), BorderLayout.NORTH);
-        add(createDashboard(), BorderLayout.CENTER);
+        mainPanel.add(
+                createHeader(),
+                BorderLayout.NORTH
+        );
+
+        mainPanel.add(
+                createDashboard(),
+                BorderLayout.CENTER
+        );
+
+        setContentPane(mainPanel);
+
+        revalidate();
+        repaint();
     }
 
     private JPanel createHeader() {
@@ -70,8 +89,15 @@ public class MainFrame extends JFrame {
                 )
         );
 
-        panel.add(title, BorderLayout.CENTER);
-        panel.add(subtitle, BorderLayout.SOUTH);
+        panel.add(
+                title,
+                BorderLayout.CENTER
+        );
+
+        panel.add(
+                subtitle,
+                BorderLayout.SOUTH
+        );
 
         return panel;
     }
@@ -96,10 +122,47 @@ public class MainFrame extends JFrame {
                 )
         );
 
-        panel.add(createMenuButton("Available Deals"));
-        panel.add(createMenuButton("Add Surplus Product"));
-        panel.add(createMenuButton("My Orders"));
-        panel.add(createMenuButton("Statistics"));
+        JButton dealsButton =
+                createMenuButton("Available Deals");
+
+        JButton addProductButton =
+                createMenuButton("Add Surplus Product");
+
+        JButton ordersButton =
+                createMenuButton("My Orders");
+
+        JButton statisticsButton =
+                createMenuButton("Statistics");
+
+        dealsButton.addActionListener(
+                e -> showAvailableDeals()
+        );
+
+        addProductButton.addActionListener(
+                e -> JOptionPane.showMessageDialog(
+                        this,
+                        "Add Surplus Product screen will be added next."
+                )
+        );
+
+        ordersButton.addActionListener(
+                e -> JOptionPane.showMessageDialog(
+                        this,
+                        "My Orders screen will be added next."
+                )
+        );
+
+        statisticsButton.addActionListener(
+                e -> JOptionPane.showMessageDialog(
+                        this,
+                        "Statistics screen will be added next."
+                )
+        );
+
+        panel.add(dealsButton);
+        panel.add(addProductButton);
+        panel.add(ordersButton);
+        panel.add(statisticsButton);
 
         return panel;
     }
@@ -119,5 +182,19 @@ public class MainFrame extends JFrame {
         button.setFocusPainted(false);
 
         return button;
+    }
+
+    private void showAvailableDeals() {
+
+        AvailableDealsPanel dealsPanel =
+                new AvailableDealsPanel(
+                        marketplaceService,
+                        this::showDashboard
+                );
+
+        setContentPane(dealsPanel);
+
+        revalidate();
+        repaint();
     }
 }
