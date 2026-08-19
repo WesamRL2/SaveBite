@@ -18,21 +18,38 @@ public class MainFrame extends JFrame {
 
     private final MarketplaceService marketplaceService;
 
-    public MainFrame(MarketplaceService marketplaceService) {
+    public MainFrame(
+            MarketplaceService marketplaceService) {
 
-        this.marketplaceService = marketplaceService;
+        this.marketplaceService =
+                marketplaceService;
 
-        setTitle("SaveBite - Surplus Food Marketplace");
-        setSize(1000, 650);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+        setTitle(
+                "SaveBite - Surplus Food Marketplace"
+        );
+
+        setSize(
+                1000,
+                650
+        );
+
+        setDefaultCloseOperation(
+                JFrame.EXIT_ON_CLOSE
+        );
+
+        setLocationRelativeTo(
+                null
+        );
 
         showDashboard();
     }
 
     private void showDashboard() {
 
-        JPanel mainPanel = new JPanel(new BorderLayout());
+        JPanel mainPanel =
+                new JPanel(
+                        new BorderLayout()
+                );
 
         mainPanel.add(
                 createHeader(),
@@ -44,7 +61,9 @@ public class MainFrame extends JFrame {
                 BorderLayout.CENTER
         );
 
-        setContentPane(mainPanel);
+        setContentPane(
+                mainPanel
+        );
 
         revalidate();
         repaint();
@@ -52,7 +71,10 @@ public class MainFrame extends JFrame {
 
     private JPanel createHeader() {
 
-        JPanel panel = new JPanel(new BorderLayout());
+        JPanel panel =
+                new JPanel(
+                        new BorderLayout()
+                );
 
         panel.setBorder(
                 BorderFactory.createEmptyBorder(
@@ -63,10 +85,11 @@ public class MainFrame extends JFrame {
                 )
         );
 
-        JLabel title = new JLabel(
-                "SaveBite",
-                SwingConstants.CENTER
-        );
+        JLabel title =
+                new JLabel(
+                        "SaveBite",
+                        SwingConstants.CENTER
+                );
 
         title.setFont(
                 new Font(
@@ -76,10 +99,11 @@ public class MainFrame extends JFrame {
                 )
         );
 
-        JLabel subtitle = new JLabel(
-                "Reduce Food Waste. Save Money.",
-                SwingConstants.CENTER
-        );
+        JLabel subtitle =
+                new JLabel(
+                        "Reduce Food Waste. Save Money.",
+                        SwingConstants.CENTER
+                );
 
         subtitle.setFont(
                 new Font(
@@ -104,14 +128,15 @@ public class MainFrame extends JFrame {
 
     private JPanel createDashboard() {
 
-        JPanel panel = new JPanel(
-                new GridLayout(
-                        2,
-                        2,
-                        20,
-                        20
-                )
-        );
+        JPanel panel =
+                new JPanel(
+                        new GridLayout(
+                                2,
+                                2,
+                                20,
+                                20
+                        )
+                );
 
         panel.setBorder(
                 BorderFactory.createEmptyBorder(
@@ -123,26 +148,31 @@ public class MainFrame extends JFrame {
         );
 
         JButton dealsButton =
-                createMenuButton("Available Deals");
+                createMenuButton(
+                        "Available Deals"
+                );
 
         JButton addProductButton =
-                createMenuButton("Add Surplus Product");
+                createMenuButton(
+                        "Add Surplus Product"
+                );
 
         JButton ordersButton =
-                createMenuButton("My Orders");
+                createMenuButton(
+                        "My Orders"
+                );
 
         JButton statisticsButton =
-                createMenuButton("Statistics");
+                createMenuButton(
+                        "Statistics"
+                );
 
         dealsButton.addActionListener(
                 e -> showAvailableDeals()
         );
 
         addProductButton.addActionListener(
-                e -> JOptionPane.showMessageDialog(
-                        this,
-                        "Add Surplus Product screen will be added next."
-                )
+                e -> showAddProduct()
         );
 
         ordersButton.addActionListener(
@@ -159,17 +189,32 @@ public class MainFrame extends JFrame {
                 )
         );
 
-        panel.add(dealsButton);
-        panel.add(addProductButton);
-        panel.add(ordersButton);
-        panel.add(statisticsButton);
+        panel.add(
+                dealsButton
+        );
+
+        panel.add(
+                addProductButton
+        );
+
+        panel.add(
+                ordersButton
+        );
+
+        panel.add(
+                statisticsButton
+        );
 
         return panel;
     }
 
-    private JButton createMenuButton(String text) {
+    private JButton createMenuButton(
+            String text) {
 
-        JButton button = new JButton(text);
+        JButton button =
+                new JButton(
+                        text
+                );
 
         button.setFont(
                 new Font(
@@ -179,7 +224,9 @@ public class MainFrame extends JFrame {
                 )
         );
 
-        button.setFocusPainted(false);
+        button.setFocusPainted(
+                false
+        );
 
         return button;
     }
@@ -192,7 +239,25 @@ public class MainFrame extends JFrame {
                         this::showDashboard
                 );
 
-        setContentPane(dealsPanel);
+        setContentPane(
+                dealsPanel
+        );
+
+        revalidate();
+        repaint();
+    }
+
+    private void showAddProduct() {
+
+        AddSurplusProductPanel addProductPanel =
+                new AddSurplusProductPanel(
+                        marketplaceService,
+                        this::showDashboard
+                );
+
+        setContentPane(
+                addProductPanel
+        );
 
         revalidate();
         repaint();
