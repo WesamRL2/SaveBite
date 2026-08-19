@@ -65,4 +65,9 @@ public class FoodProduct extends Product {
     public boolean isPickupExpired() {
         return LocalDateTime.now().isAfter(pickupDeadline);
     }
+    
+    @Override
+public boolean isAvailable() {
+    return super.isAvailable() && !isPickupExpired();
+}
 }
