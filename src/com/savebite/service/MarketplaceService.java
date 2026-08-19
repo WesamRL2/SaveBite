@@ -63,9 +63,30 @@ public class MarketplaceService {
         return null;
     }
 
+    public Order findOrderById(
+            String orderId) {
+
+        if (orderId == null) {
+            return null;
+        }
+
+        for (Order order : orders) {
+
+            if (order
+                    .getId()
+                    .equalsIgnoreCase(orderId)) {
+
+                return order;
+            }
+        }
+
+        return null;
+    }
+
     public String generateProductId() {
 
-        int number = products.size() + 1;
+        int number =
+                products.size() + 1;
 
         String id =
                 String.format(
@@ -129,12 +150,9 @@ public class MarketplaceService {
             );
         }
 
-        String orderId =
-                generateOrderId();
-
         Order order =
                 new Order(
-                        orderId,
+                        generateOrderId(),
                         customer,
                         product,
                         quantity
@@ -143,6 +161,59 @@ public class MarketplaceService {
         orders.add(order);
 
         return order;
+    }
+
+    public boolean cancelOrder(
+            String orderId) {
+
+        Order order =
+                findOrderById(orderId);
+
+        if (order == null) {
+            return false;
+        }
+
+        if ("Cancelled".equalsIgnoreCase(
+                order.getStatus())) {
+
+            return false;
+        }
+
+        if ("Collected".equalsIgnoreCase(
+                order.getStatus())) {
+
+            return false;
+        }
+
+        order.getProduct()
+                .increaseQuantity(
+                        order.getQuantity()
+                );
+
+        order.cancel();
+
+        return true;
+    }
+
+    public boolean collectOrder(
+            String orderId) {
+
+        Order order =
+                findOrderById(orderId);
+
+        if (order == null) {
+            return false;
+        }
+
+        if (!"Reserved".equalsIgnoreCase(
+                order.getStatus())) {
+
+            return false;
+        }
+
+        order.markAsCollected();
+
+        return true;
     }
 
     private String generateOrderId() {
@@ -165,5 +236,98 @@ public class MarketplaceService {
         return new ArrayList<>(
                 orders
         );
+    }
+
+    public int getTotalOrders() {
+        return orders.size();
+    }
+
+    public int getReservedItemCount() {
+
+        int total = 0;
+
+        for (Order order : orders) {
+
+            if (!"Cancelled".equalsIgnoreCase(
+                    order.getStatus())) {
+
+                total += order.getQuantity();
+            }
+        }
+
+        return total;
+    }
+
+    public int getAvailableItemCount() {
+
+        int total = 0;
+
+        for (Product product : products) {
+
+            if (product.isAvailable()) {
+                total += product.getQuantity();
+            }
+        }
+
+        return total;
+    }
+
+    public double getRecoveredRevenue() {
+
+        double total = 0;
+
+        for (Order order : orders) {
+
+            if (!"Cancelled".equalsIgnoreCase(
+                    order.getStatus())) {
+
+                total += order.calculateTotal();
+            }
+        }
+
+        return total;
+    }
+
+    public double getCustomerSavings() {
+
+        double total = 0;
+
+        for (Order order : orders) {
+
+            if (!"Cancelled".equalsIgnoreCase(
+                    order.getStatus())) {
+
+                double originalValue =
+                        order.getProduct()
+                                .getOriginalPrice()
+                                * order.getQuantity();
+
+                total +=
+                        originalValue
+                                - order.calculateTotal();
+            }
+        }
+
+        return total;
+    }
+
+    public double getSurplusRescueRate() {
+
+        int rescued =
+                getReservedItemCount();
+
+        int remaining =
+                getAvailableItemCount();
+
+        int total =
+                rescued + remaining;
+
+        if (total == 0) {
+            return 0;
+        }
+
+        return (
+                (double) rescued / total
+        ) * 100;
     }
 }

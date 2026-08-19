@@ -8,8 +8,12 @@ public abstract class Product {
     private int quantity;
     private String sellerId;
 
-    public Product(String id, String name, double originalPrice,
-                   int quantity, String sellerId) {
+    public Product(
+            String id,
+            String name,
+            double originalPrice,
+            int quantity,
+            String sellerId) {
 
         this.id = id;
         this.name = name;
@@ -33,15 +37,6 @@ public abstract class Product {
     public int getQuantity() {
         return quantity;
     }
-    
-    public boolean reduceQuantity(int amount) {
-    if (amount > 0 && amount <= quantity) {
-        quantity -= amount;
-        return true;
-    }
-
-    return false;
-}
 
     public String getSellerId() {
         return sellerId;
@@ -52,14 +47,34 @@ public abstract class Product {
     }
 
     public void setOriginalPrice(double originalPrice) {
+
         if (originalPrice >= 0) {
             this.originalPrice = originalPrice;
         }
     }
 
     public void setQuantity(int quantity) {
+
         if (quantity >= 0) {
             this.quantity = quantity;
+        }
+    }
+
+    public boolean reduceQuantity(int amount) {
+
+        if (amount > 0 && amount <= quantity) {
+
+            quantity -= amount;
+            return true;
+        }
+
+        return false;
+    }
+
+    public void increaseQuantity(int amount) {
+
+        if (amount > 0) {
+            quantity += amount;
         }
     }
 

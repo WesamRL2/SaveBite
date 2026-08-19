@@ -3,6 +3,7 @@ package com.savebite.ui;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
 import javax.swing.BorderFactory;
@@ -18,6 +19,7 @@ import javax.swing.table.DefaultTableModel;
 import com.savebite.model.Customer;
 import com.savebite.model.Order;
 import com.savebite.service.MarketplaceService;
+import com.savebite.storage.FileManager;
 
 public class MyOrdersPanel extends JPanel {
 
@@ -33,11 +35,21 @@ public class MyOrdersPanel extends JPanel {
             Customer currentCustomer,
             Runnable backAction) {
 
-        this.marketplaceService = marketplaceService;
-        this.currentCustomer = currentCustomer;
-        this.backAction = backAction;
+        this.marketplaceService =
+                marketplaceService;
 
-        setLayout(new BorderLayout(10, 10));
+        this.currentCustomer =
+                currentCustomer;
+
+        this.backAction =
+                backAction;
+
+        setLayout(
+                new BorderLayout(
+                        10,
+                        10
+                )
+        );
 
         setBorder(
                 BorderFactory.createEmptyBorder(
@@ -63,34 +75,40 @@ public class MyOrdersPanel extends JPanel {
                 "Status"
         };
 
-        tableModel = new DefaultTableModel(
-                columns,
-                0
-        ) {
+        tableModel =
+                new DefaultTableModel(
+                        columns,
+                        0
+                ) {
 
-            @Override
-            public boolean isCellEditable(
-                    int row,
-                    int column) {
+                    @Override
+                    public boolean isCellEditable(
+                            int row,
+                            int column) {
 
-                return false;
-            }
-        };
+                        return false;
+                    }
+                };
 
-        ordersTable = new JTable(tableModel);
+        ordersTable =
+                new JTable(tableModel);
 
         ordersTable.setRowHeight(30);
 
-        ordersTable.getTableHeader().setFont(
-                new Font(
-                        "Arial",
-                        Font.BOLD,
-                        14
-                )
-        );
+        ordersTable
+                .getTableHeader()
+                .setFont(
+                        new Font(
+                                "Arial",
+                                Font.BOLD,
+                                14
+                        )
+                );
 
         add(
-                new JScrollPane(ordersTable),
+                new JScrollPane(
+                        ordersTable
+                ),
                 BorderLayout.CENTER
         );
 
@@ -123,12 +141,15 @@ public class MyOrdersPanel extends JPanel {
                         )
                 );
 
-        leftPanel.add(backButton);
+        leftPanel.add(
+                backButton
+        );
 
         JLabel title =
                 new JLabel(
                         "My Orders - "
-                                + currentCustomer.getName(),
+                                + currentCustomer
+                                        .getName(),
                         SwingConstants.CENTER
                 );
 
@@ -180,8 +201,13 @@ public class MyOrdersPanel extends JPanel {
                 e -> cancelSelectedOrder()
         );
 
-        panel.add(collectedButton);
-        panel.add(cancelButton);
+        panel.add(
+                collectedButton
+        );
+
+        panel.add(
+                cancelButton
+        );
 
         return panel;
     }
@@ -230,7 +256,9 @@ public class MyOrdersPanel extends JPanel {
 
                             order
                                     .getOrderTime()
-                                    .format(formatter),
+                                    .format(
+                                            formatter
+                                    ),
 
                             order.getStatus()
                     }
@@ -238,10 +266,11 @@ public class MyOrdersPanel extends JPanel {
         }
     }
 
-    private Order getSelectedOrder() {
+    private String getSelectedOrderId() {
 
         int selectedRow =
-                ordersTable.getSelectedRow();
+                ordersTable
+                        .getSelectedRow();
 
         if (selectedRow == -1) {
 
@@ -255,43 +284,34 @@ public class MyOrdersPanel extends JPanel {
             return null;
         }
 
-        String orderId =
-                tableModel
-                        .getValueAt(
-                                selectedRow,
-                                0
-                        )
-                        .toString();
-
-        for (Order order :
-                marketplaceService.getOrders()) {
-
-            if (order
-                    .getId()
-                    .equalsIgnoreCase(orderId)) {
-
-                return order;
-            }
-        }
-
-        return null;
+        return tableModel
+                .getValueAt(
+                        selectedRow,
+                        0
+                )
+                .toString();
     }
 
     private void markSelectedOrderAsCollected() {
 
-        Order order =
-                getSelectedOrder();
+        String orderId =
+                getSelectedOrderId();
 
-        if (order == null) {
+        if (orderId == null) {
             return;
         }
 
-        if ("Cancelled".equalsIgnoreCase(
-                order.getStatus())) {
+        boolean success =
+                marketplaceService
+                        .collectOrder(
+                                orderId
+                        );
+
+        if (!success) {
 
             JOptionPane.showMessageDialog(
                     this,
-                    "A cancelled order cannot be collected.",
+                    "Only reserved orders can be collected.",
                     "Invalid Action",
                     JOptionPane.ERROR_MESSAGE
             );
@@ -299,14 +319,12 @@ public class MyOrdersPanel extends JPanel {
             return;
         }
 
-        order.markAsCollected();
-
         refreshOrders();
 
         JOptionPane.showMessageDialog(
                 this,
                 "Order "
-                        + order.getId()
+                        + orderId
                         + " marked as collected.",
                 "SaveBite",
                 JOptionPane.INFORMATION_MESSAGE
@@ -315,19 +333,24 @@ public class MyOrdersPanel extends JPanel {
 
     private void cancelSelectedOrder() {
 
-        Order order =
-                getSelectedOrder();
+        String orderId =
+                getSelectedOrderId();
 
-        if (order == null) {
+        if (orderId == null) {
             return;
         }
 
-        if ("Collected".equalsIgnoreCase(
-                order.getStatus())) {
+        boolean success =
+                marketplaceService
+                        .cancelOrder(
+                                orderId
+                        );
+
+        if (!success) {
 
             JOptionPane.showMessageDialog(
                     this,
-                    "A collected order cannot be cancelled.",
+                    "Only reserved orders can be cancelled.",
                     "Invalid Action",
                     JOptionPane.ERROR_MESSAGE
             );
@@ -335,28 +358,30 @@ public class MyOrdersPanel extends JPanel {
             return;
         }
 
-        if ("Cancelled".equalsIgnoreCase(
-                order.getStatus())) {
+        try {
+
+            FileManager.saveProducts(
+                    marketplaceService
+                            .getProducts()
+            );
+
+        } catch (IOException e) {
 
             JOptionPane.showMessageDialog(
                     this,
-                    "This order is already cancelled.",
-                    "Invalid Action",
-                    JOptionPane.WARNING_MESSAGE
+                    "Order was cancelled, but updated stock could not be saved.",
+                    "File Error",
+                    JOptionPane.ERROR_MESSAGE
             );
-
-            return;
         }
-
-        order.cancel();
 
         refreshOrders();
 
         JOptionPane.showMessageDialog(
                 this,
                 "Order "
-                        + order.getId()
-                        + " cancelled.",
+                        + orderId
+                        + " cancelled. The quantity was returned to available stock.",
                 "SaveBite",
                 JOptionPane.INFORMATION_MESSAGE
         );
