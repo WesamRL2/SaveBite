@@ -181,7 +181,7 @@ public class MainFrame extends JFrame {
         );
 
         statisticsButton.addActionListener(
-                e -> showStatisticsPlaceholder()
+                e -> showStatistics()
         );
 
         panel.add(dealsButton);
@@ -255,11 +255,17 @@ public class MainFrame extends JFrame {
         repaint();
     }
 
-    private void showStatisticsPlaceholder() {
+    private void showStatistics() {
 
-        javax.swing.JOptionPane.showMessageDialog(
-                this,
-                "Statistics dashboard will be added next."
-        );
+        StatisticsPanel statisticsPanel =
+                new StatisticsPanel(
+                        marketplaceService,
+                        this::showDashboard
+                );
+
+        setContentPane(statisticsPanel);
+
+        revalidate();
+        repaint();
     }
 }

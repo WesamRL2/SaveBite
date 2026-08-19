@@ -12,7 +12,6 @@ public class MarketplaceService {
     private final ArrayList<Order> orders;
 
     public MarketplaceService() {
-
         products = new ArrayList<>();
         orders = new ArrayList<>();
     }
@@ -26,12 +25,10 @@ public class MarketplaceService {
         }
 
         products.add(product);
-
         return true;
     }
 
-    public boolean removeProductById(
-            String productId) {
+    public boolean removeProductById(String productId) {
 
         Product product =
                 findProductById(productId);
@@ -43,8 +40,7 @@ public class MarketplaceService {
         return products.remove(product);
     }
 
-    public Product findProductById(
-            String productId) {
+    public Product findProductById(String productId) {
 
         if (productId == null) {
             return null;
@@ -63,8 +59,7 @@ public class MarketplaceService {
         return null;
     }
 
-    public Order findOrderById(
-            String orderId) {
+    public Order findOrderById(String orderId) {
 
         if (orderId == null) {
             return null;
@@ -85,8 +80,7 @@ public class MarketplaceService {
 
     public String generateProductId() {
 
-        int number =
-                products.size() + 1;
+        int number = products.size() + 1;
 
         String id =
                 String.format(
@@ -163,8 +157,7 @@ public class MarketplaceService {
         return order;
     }
 
-    public boolean cancelOrder(
-            String orderId) {
+    public boolean cancelOrder(String orderId) {
 
         Order order =
                 findOrderById(orderId);
@@ -173,13 +166,7 @@ public class MarketplaceService {
             return false;
         }
 
-        if ("Cancelled".equalsIgnoreCase(
-                order.getStatus())) {
-
-            return false;
-        }
-
-        if ("Collected".equalsIgnoreCase(
+        if (!"Reserved".equalsIgnoreCase(
                 order.getStatus())) {
 
             return false;
@@ -195,8 +182,7 @@ public class MarketplaceService {
         return true;
     }
 
-    public boolean collectOrder(
-            String orderId) {
+    public boolean collectOrder(String orderId) {
 
         Order order =
                 findOrderById(orderId);
@@ -238,6 +224,24 @@ public class MarketplaceService {
         );
     }
 
+    public int getTotalProducts() {
+        return products.size();
+    }
+
+    public int getAvailableListingCount() {
+
+        int total = 0;
+
+        for (Product product : products) {
+
+            if (product.isAvailable()) {
+                total++;
+            }
+        }
+
+        return total;
+    }
+
     public int getTotalOrders() {
         return orders.size();
     }
@@ -265,7 +269,9 @@ public class MarketplaceService {
         for (Product product : products) {
 
             if (product.isAvailable()) {
-                total += product.getQuantity();
+
+                total +=
+                        product.getQuantity();
             }
         }
 
@@ -281,7 +287,8 @@ public class MarketplaceService {
             if (!"Cancelled".equalsIgnoreCase(
                     order.getStatus())) {
 
-                total += order.calculateTotal();
+                total +=
+                        order.calculateTotal();
             }
         }
 
@@ -298,7 +305,8 @@ public class MarketplaceService {
                     order.getStatus())) {
 
                 double originalValue =
-                        order.getProduct()
+                        order
+                                .getProduct()
                                 .getOriginalPrice()
                                 * order.getQuantity();
 
