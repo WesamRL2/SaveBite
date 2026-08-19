@@ -8,7 +8,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
@@ -178,17 +177,11 @@ public class MainFrame extends JFrame {
         );
 
         ordersButton.addActionListener(
-                e -> JOptionPane.showMessageDialog(
-                        this,
-                        "My Orders screen will be added next."
-                )
+                e -> showMyOrders()
         );
 
         statisticsButton.addActionListener(
-                e -> JOptionPane.showMessageDialog(
-                        this,
-                        "Statistics screen will be added next."
-                )
+                e -> showStatisticsPlaceholder()
         );
 
         panel.add(dealsButton);
@@ -245,5 +238,28 @@ public class MainFrame extends JFrame {
 
         revalidate();
         repaint();
+    }
+
+    private void showMyOrders() {
+
+        MyOrdersPanel myOrdersPanel =
+                new MyOrdersPanel(
+                        marketplaceService,
+                        currentCustomer,
+                        this::showDashboard
+                );
+
+        setContentPane(myOrdersPanel);
+
+        revalidate();
+        repaint();
+    }
+
+    private void showStatisticsPlaceholder() {
+
+        javax.swing.JOptionPane.showMessageDialog(
+                this,
+                "Statistics dashboard will be added next."
+        );
     }
 }
