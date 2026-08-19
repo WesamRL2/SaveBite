@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import javax.swing.SwingUtilities;
 
+import com.savebite.model.Customer;
 import com.savebite.model.Product;
 import com.savebite.service.MarketplaceService;
 import com.savebite.storage.FileManager;
@@ -17,6 +18,13 @@ public class Main {
         MarketplaceService marketplaceService =
                 new MarketplaceService();
 
+        Customer currentCustomer =
+                new Customer(
+                        "C001",
+                        "Ali",
+                        "ali@email.com"
+                );
+
         loadSavedProducts(
                 marketplaceService
         );
@@ -26,7 +34,8 @@ public class Main {
 
                     MainFrame mainFrame =
                             new MainFrame(
-                                    marketplaceService
+                                    marketplaceService,
+                                    currentCustomer
                             );
 
                     mainFrame.setVisible(true);

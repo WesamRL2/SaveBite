@@ -12,17 +12,23 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import com.savebite.model.Customer;
 import com.savebite.service.MarketplaceService;
 
 public class MainFrame extends JFrame {
 
     private final MarketplaceService marketplaceService;
+    private final Customer currentCustomer;
 
     public MainFrame(
-            MarketplaceService marketplaceService) {
+            MarketplaceService marketplaceService,
+            Customer currentCustomer) {
 
         this.marketplaceService =
                 marketplaceService;
+
+        this.currentCustomer =
+                currentCustomer;
 
         setTitle(
                 "SaveBite - Surplus Food Marketplace"
@@ -37,9 +43,7 @@ public class MainFrame extends JFrame {
                 JFrame.EXIT_ON_CLOSE
         );
 
-        setLocationRelativeTo(
-                null
-        );
+        setLocationRelativeTo(null);
 
         showDashboard();
     }
@@ -61,9 +65,7 @@ public class MainFrame extends JFrame {
                 BorderLayout.CENTER
         );
 
-        setContentPane(
-                mainPanel
-        );
+        setContentPane(mainPanel);
 
         revalidate();
         repaint();
@@ -189,21 +191,10 @@ public class MainFrame extends JFrame {
                 )
         );
 
-        panel.add(
-                dealsButton
-        );
-
-        panel.add(
-                addProductButton
-        );
-
-        panel.add(
-                ordersButton
-        );
-
-        panel.add(
-                statisticsButton
-        );
+        panel.add(dealsButton);
+        panel.add(addProductButton);
+        panel.add(ordersButton);
+        panel.add(statisticsButton);
 
         return panel;
     }
@@ -212,9 +203,7 @@ public class MainFrame extends JFrame {
             String text) {
 
         JButton button =
-                new JButton(
-                        text
-                );
+                new JButton(text);
 
         button.setFont(
                 new Font(
@@ -224,9 +213,7 @@ public class MainFrame extends JFrame {
                 )
         );
 
-        button.setFocusPainted(
-                false
-        );
+        button.setFocusPainted(false);
 
         return button;
     }
@@ -236,12 +223,11 @@ public class MainFrame extends JFrame {
         AvailableDealsPanel dealsPanel =
                 new AvailableDealsPanel(
                         marketplaceService,
+                        currentCustomer,
                         this::showDashboard
                 );
 
-        setContentPane(
-                dealsPanel
-        );
+        setContentPane(dealsPanel);
 
         revalidate();
         repaint();
@@ -255,9 +241,7 @@ public class MainFrame extends JFrame {
                         this::showDashboard
                 );
 
-        setContentPane(
-                addProductPanel
-        );
+        setContentPane(addProductPanel);
 
         revalidate();
         repaint();
