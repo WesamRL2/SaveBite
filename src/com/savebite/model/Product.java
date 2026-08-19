@@ -33,6 +33,15 @@ public abstract class Product {
     public int getQuantity() {
         return quantity;
     }
+    
+    public boolean reduceQuantity(int amount) {
+    if (amount > 0 && amount <= quantity) {
+        quantity -= amount;
+        return true;
+    }
+
+    return false;
+}
 
     public String getSellerId() {
         return sellerId;

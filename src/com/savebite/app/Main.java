@@ -4,20 +4,23 @@ import java.time.LocalDateTime;
 
 import com.savebite.model.Customer;
 import com.savebite.model.FoodProduct;
+import com.savebite.model.Order;
 import com.savebite.model.Product;
 import com.savebite.model.Seller;
 import com.savebite.model.User;
+import com.savebite.service.MarketplaceService;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        // Test User inheritance and polymorphism
-        User customer = new Customer(
+        Customer customerObject = new Customer(
                 "C001",
                 "Ali",
                 "ali@email.com"
         );
+
+        User customer = customerObject;
 
         User seller = new Seller(
                 "S001",
@@ -27,16 +30,6 @@ public class Main {
                 "Restaurant"
         );
 
-        System.out.println("=== SAVEBITE USER TEST ===");
-        System.out.println("User 1: " + customer.getName());
-        System.out.println("Role: " + customer.getRole());
-
-        System.out.println();
-
-        System.out.println("User 2: " + seller.getName());
-        System.out.println("Role: " + seller.getRole());
-
-        // Test Product inheritance and polymorphism
         Product product = new FoodProduct(
                 "P001",
                 "Chicken Meal",
@@ -48,13 +41,70 @@ public class Main {
                 LocalDateTime.now().plusHours(3)
         );
 
+        MarketplaceService marketplace =
+                new MarketplaceService();
+
+        marketplace.addProduct(product);
+
+        System.out.println("=== SAVEBITE ===");
+
         System.out.println();
-        System.out.println("=== SAVEBITE PRODUCT TEST ===");
+        System.out.println("Customer: " + customer.getName());
+        System.out.println("Role: " + customer.getRole());
+
+        System.out.println();
+        System.out.println("Seller: " + seller.getName());
+        System.out.println("Role: " + seller.getRole());
+
+        System.out.println();
+        System.out.println("=== AVAILABLE DEAL ===");
+
         System.out.println("Product: " + product.getName());
-        System.out.printf("Original Price: RM %.2f%n", product.getOriginalPrice());
-        System.out.printf("Final Price: RM %.2f%n", product.calculateFinalPrice());
-        System.out.println("Quantity: " + product.getQuantity());
-        System.out.println("Available: " + product.isAvailable());
-        System.out.println("Product Type: " + product.getProductType());
+        System.out.printf(
+                "Original Price: RM %.2f%n",
+                product.getOriginalPrice()
+        );
+
+        System.out.printf(
+                "SaveBite Price: RM %.2f%n",
+                product.calculateFinalPrice()
+        );
+
+        System.out.println(
+                "Quantity Before Reservation: "
+                        + product.getQuantity()
+        );
+
+        Order order = marketplace.reserveProduct(
+                customerObject,
+                "P001",
+                2
+        );
+
+        System.out.println();
+        System.out.println("=== RESERVATION SUCCESSFUL ===");
+
+        System.out.println("Order ID: " + order.getId());
+        System.out.println(
+                "Product: " + order.getProduct().getName()
+        );
+
+        System.out.println(
+                "Reserved Quantity: " + order.getQuantity()
+        );
+
+        System.out.printf(
+                "Total Price: RM %.2f%n",
+                order.calculateTotal()
+        );
+
+        System.out.println(
+                "Status: " + order.getStatus()
+        );
+
+        System.out.println(
+                "Quantity After Reservation: "
+                        + product.getQuantity()
+        );
     }
 }
