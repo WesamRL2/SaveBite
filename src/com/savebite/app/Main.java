@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import javax.swing.SwingUtilities;
 
 import com.savebite.model.Customer;
+import com.savebite.model.Order;
 import com.savebite.model.Product;
 import com.savebite.service.MarketplaceService;
 import com.savebite.storage.FileManager;
@@ -25,8 +26,9 @@ public class Main {
                         "ali@email.com"
                 );
 
-        loadSavedProducts(
-                marketplaceService
+        loadSavedData(
+                marketplaceService,
+                currentCustomer
         );
 
         SwingUtilities.invokeLater(
@@ -43,26 +45,40 @@ public class Main {
         );
     }
 
-    private static void loadSavedProducts(
-            MarketplaceService marketplaceService) {
+    private static void loadSavedData(
+            MarketplaceService marketplaceService,
+            Customer currentCustomer) {
 
         try {
 
-            ArrayList<Product> savedProducts =
+            ArrayList<Product> products =
                     FileManager.loadProducts();
 
-            for (Product product :
-                    savedProducts) {
+            for (Product product : products) {
 
                 marketplaceService.addProduct(
                         product
                 );
             }
 
+            ArrayList<Order> orders =
+                    FileManager.loadOrders(
+                            marketplaceService
+                                    .getProducts(),
+                            currentCustomer
+                    );
+
+            for (Order order : orders) {
+
+                marketplaceService.addOrder(
+                        order
+                );
+            }
+
         } catch (IOException e) {
 
             System.out.println(
-                    "Could not load saved products: "
+                    "Could not load saved data: "
                             + e.getMessage()
             );
         }

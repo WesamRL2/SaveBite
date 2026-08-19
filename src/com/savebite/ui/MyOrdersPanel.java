@@ -91,9 +91,13 @@ public class MyOrdersPanel extends JPanel {
                 };
 
         ordersTable =
-                new JTable(tableModel);
+                new JTable(
+                        tableModel
+                );
 
-        ordersTable.setRowHeight(30);
+        ordersTable.setRowHeight(
+                30
+        );
 
         ordersTable
                 .getTableHeader()
@@ -319,6 +323,23 @@ public class MyOrdersPanel extends JPanel {
             return;
         }
 
+        try {
+
+            FileManager.saveOrders(
+                    marketplaceService
+                            .getOrders()
+            );
+
+        } catch (IOException e) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Order status changed but could not be saved.",
+                    "File Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
+
         refreshOrders();
 
         JOptionPane.showMessageDialog(
@@ -365,11 +386,16 @@ public class MyOrdersPanel extends JPanel {
                             .getProducts()
             );
 
+            FileManager.saveOrders(
+                    marketplaceService
+                            .getOrders()
+            );
+
         } catch (IOException e) {
 
             JOptionPane.showMessageDialog(
                     this,
-                    "Order was cancelled, but updated stock could not be saved.",
+                    "Order changed but data could not be saved.",
                     "File Error",
                     JOptionPane.ERROR_MESSAGE
             );

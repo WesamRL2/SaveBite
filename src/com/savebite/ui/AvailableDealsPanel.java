@@ -38,11 +38,21 @@ public class AvailableDealsPanel extends JPanel {
             Customer currentCustomer,
             Runnable backAction) {
 
-        this.marketplaceService = marketplaceService;
-        this.currentCustomer = currentCustomer;
-        this.backAction = backAction;
+        this.marketplaceService =
+                marketplaceService;
 
-        setLayout(new BorderLayout(10, 10));
+        this.currentCustomer =
+                currentCustomer;
+
+        this.backAction =
+                backAction;
+
+        setLayout(
+                new BorderLayout(
+                        10,
+                        10
+                )
+        );
 
         setBorder(
                 BorderFactory.createEmptyBorder(
@@ -68,34 +78,44 @@ public class AvailableDealsPanel extends JPanel {
                 "Pickup Deadline"
         };
 
-        tableModel = new DefaultTableModel(
-                columns,
-                0
-        ) {
+        tableModel =
+                new DefaultTableModel(
+                        columns,
+                        0
+                ) {
 
-            @Override
-            public boolean isCellEditable(
-                    int row,
-                    int column) {
+                    @Override
+                    public boolean isCellEditable(
+                            int row,
+                            int column) {
 
-                return false;
-            }
-        };
+                        return false;
+                    }
+                };
 
-        dealsTable = new JTable(tableModel);
+        dealsTable =
+                new JTable(
+                        tableModel
+                );
 
-        dealsTable.setRowHeight(30);
-
-        dealsTable.getTableHeader().setFont(
-                new Font(
-                        "Arial",
-                        Font.BOLD,
-                        14
-                )
+        dealsTable.setRowHeight(
+                30
         );
 
+        dealsTable
+                .getTableHeader()
+                .setFont(
+                        new Font(
+                                "Arial",
+                                Font.BOLD,
+                                14
+                        )
+                );
+
         add(
-                new JScrollPane(dealsTable),
+                new JScrollPane(
+                        dealsTable
+                ),
                 BorderLayout.CENTER
         );
 
@@ -110,10 +130,14 @@ public class AvailableDealsPanel extends JPanel {
     private JPanel createTopPanel() {
 
         JPanel panel =
-                new JPanel(new BorderLayout());
+                new JPanel(
+                        new BorderLayout()
+                );
 
         JButton backButton =
-                new JButton("Back");
+                new JButton(
+                        "Back"
+                );
 
         backButton.addActionListener(
                 e -> backAction.run()
@@ -126,7 +150,9 @@ public class AvailableDealsPanel extends JPanel {
                         )
                 );
 
-        leftPanel.add(backButton);
+        leftPanel.add(
+                backButton
+        );
 
         JLabel title =
                 new JLabel(
@@ -181,14 +207,18 @@ public class AvailableDealsPanel extends JPanel {
                 e -> reserveSelectedDeal()
         );
 
-        panel.add(reserveButton);
+        panel.add(
+                reserveButton
+        );
 
         return panel;
     }
 
     public void refreshDeals() {
 
-        tableModel.setRowCount(0);
+        tableModel.setRowCount(
+                0
+        );
 
         DateTimeFormatter formatter =
                 DateTimeFormatter.ofPattern(
@@ -205,7 +235,8 @@ public class AvailableDealsPanel extends JPanel {
             String category = "-";
             String deadline = "-";
 
-            if (product instanceof FoodProduct foodProduct) {
+            if (product
+                    instanceof FoodProduct foodProduct) {
 
                 category =
                         foodProduct.getCategory();
@@ -213,13 +244,14 @@ public class AvailableDealsPanel extends JPanel {
                 deadline =
                         foodProduct
                                 .getPickupDeadline()
-                                .format(formatter);
+                                .format(
+                                        formatter
+                                );
             }
 
             tableModel.addRow(
                     new Object[] {
                             product.getId(),
-
                             product.getName(),
 
                             String.format(
@@ -233,9 +265,7 @@ public class AvailableDealsPanel extends JPanel {
                             ),
 
                             product.getQuantity(),
-
                             category,
-
                             deadline
                     }
             );
@@ -245,7 +275,8 @@ public class AvailableDealsPanel extends JPanel {
     private void reserveSelectedDeal() {
 
         int selectedRow =
-                dealsTable.getSelectedRow();
+                dealsTable
+                        .getSelectedRow();
 
         if (selectedRow == -1) {
 
@@ -279,7 +310,8 @@ public class AvailableDealsPanel extends JPanel {
                 JOptionPane.showInputDialog(
                         this,
                         "Enter quantity to reserve:",
-                        "Reserve " + productName,
+                        "Reserve "
+                                + productName,
                         JOptionPane.QUESTION_MESSAGE
                 );
 
@@ -290,20 +322,28 @@ public class AvailableDealsPanel extends JPanel {
         try {
 
             int quantity =
-                    ValidationUtil.parsePositiveInt(
-                            quantityInput,
-                            "Quantity"
-                    );
+                    ValidationUtil
+                            .parsePositiveInt(
+                                    quantityInput,
+                                    "Quantity"
+                            );
 
             Order order =
-                    marketplaceService.reserveProduct(
-                            currentCustomer,
-                            productId,
-                            quantity
-                    );
+                    marketplaceService
+                            .reserveProduct(
+                                    currentCustomer,
+                                    productId,
+                                    quantity
+                            );
 
             FileManager.saveProducts(
-                    marketplaceService.getProducts()
+                    marketplaceService
+                            .getProducts()
+            );
+
+            FileManager.saveOrders(
+                    marketplaceService
+                            .getOrders()
             );
 
             JOptionPane.showMessageDialog(
@@ -320,7 +360,9 @@ public class AvailableDealsPanel extends JPanel {
                             Status: %s
                             """,
                             order.getId(),
-                            order.getProduct().getName(),
+                            order
+                                    .getProduct()
+                                    .getName(),
                             order.getQuantity(),
                             order.getUnitPrice(),
                             order.calculateTotal(),
@@ -346,7 +388,7 @@ public class AvailableDealsPanel extends JPanel {
 
             JOptionPane.showMessageDialog(
                     this,
-                    "Reservation was created, but the updated stock could not be saved.",
+                    "Reservation was created, but data could not be saved.",
                     "File Error",
                     JOptionPane.ERROR_MESSAGE
             );

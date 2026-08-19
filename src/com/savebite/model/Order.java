@@ -18,13 +18,33 @@ public class Order {
             Product product,
             int quantity) {
 
+        this(
+                id,
+                customer,
+                product,
+                quantity,
+                product.calculateFinalPrice(),
+                LocalDateTime.now(),
+                "Reserved"
+        );
+    }
+
+    public Order(
+            String id,
+            Customer customer,
+            Product product,
+            int quantity,
+            double unitPrice,
+            LocalDateTime orderTime,
+            String status) {
+
         this.id = id;
         this.customer = customer;
         this.product = product;
         this.quantity = quantity;
-        this.unitPrice = product.calculateFinalPrice();
-        this.orderTime = LocalDateTime.now();
-        this.status = "Reserved";
+        this.unitPrice = unitPrice;
+        this.orderTime = orderTime;
+        this.status = status;
     }
 
     public String getId() {

@@ -28,6 +28,18 @@ public class MarketplaceService {
         return true;
     }
 
+    public boolean addOrder(Order order) {
+
+        if (order == null
+                || findOrderById(order.getId()) != null) {
+
+            return false;
+        }
+
+        orders.add(order);
+        return true;
+    }
+
     public boolean removeProductById(String productId) {
 
         Product product =
@@ -204,10 +216,25 @@ public class MarketplaceService {
 
     private String generateOrderId() {
 
-        return String.format(
-                "ORD%03d",
-                orders.size() + 1
-        );
+        int number = orders.size() + 1;
+
+        String id =
+                String.format(
+                        "ORD%03d",
+                        number
+                );
+
+        while (findOrderById(id) != null) {
+
+            number++;
+
+            id = String.format(
+                    "ORD%03d",
+                    number
+            );
+        }
+
+        return id;
     }
 
     public ArrayList<Product> getProducts() {
