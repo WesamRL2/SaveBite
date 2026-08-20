@@ -2,7 +2,6 @@ package com.savebite.ui;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
@@ -21,6 +20,7 @@ import com.savebite.model.FoodProduct;
 import com.savebite.model.Order;
 import com.savebite.model.Product;
 import com.savebite.service.MarketplaceService;
+import com.savebite.storage.ActivityLogger;
 import com.savebite.storage.FileManager;
 import com.savebite.util.ValidationUtil;
 
@@ -75,16 +75,11 @@ public class AvailableDealsPanel extends JPanel {
         };
 
         dealsTable = new JTable(tableModel);
-
         UITheme.styleTable(dealsTable);
 
-        JScrollPane scrollPane =
-                new JScrollPane(dealsTable);
-
+        JScrollPane scrollPane = new JScrollPane(dealsTable);
         scrollPane.setBorder(
-                BorderFactory.createLineBorder(
-                        UITheme.BORDER
-                )
+                BorderFactory.createLineBorder(UITheme.BORDER)
         );
 
         add(scrollPane, BorderLayout.CENTER);
@@ -95,86 +90,53 @@ public class AvailableDealsPanel extends JPanel {
 
     private JPanel createHeader() {
 
-        JPanel panel =
-                new JPanel(new BorderLayout());
-
+        JPanel panel = new JPanel(new BorderLayout());
         panel.setOpaque(false);
 
-        JButton backButton =
-                UITheme.createBackButton();
+        JButton backButton = UITheme.createBackButton();
+        backButton.addActionListener(e -> backAction.run());
 
-        backButton.addActionListener(
-                e -> backAction.run()
+        JLabel title = new JLabel(
+                "Available Deals",
+                SwingConstants.CENTER
         );
-
-        JLabel title =
-                new JLabel(
-                        "Available Deals",
-                        SwingConstants.CENTER
-                );
-
         title.setFont(UITheme.TITLE_FONT);
         title.setForeground(UITheme.TEXT);
 
-        JLabel subtitle =
-                new JLabel(
-                        "Choose surplus food and reserve it at a discounted price.",
-                        SwingConstants.CENTER
-                );
-
+        JLabel subtitle = new JLabel(
+                "Choose surplus food and reserve it at a discounted price.",
+                SwingConstants.CENTER
+        );
         subtitle.setFont(UITheme.SUBTITLE_FONT);
         subtitle.setForeground(UITheme.MUTED_TEXT);
 
-        JPanel titlePanel =
-                new JPanel(new BorderLayout());
-
+        JPanel titlePanel = new JPanel(new BorderLayout());
         titlePanel.setOpaque(false);
+        titlePanel.add(title, BorderLayout.CENTER);
+        titlePanel.add(subtitle, BorderLayout.SOUTH);
 
-        titlePanel.add(
-                title,
-                BorderLayout.CENTER
-        );
-
-        titlePanel.add(
-                subtitle,
-                BorderLayout.SOUTH
-        );
-
-        panel.add(
-                backButton,
-                BorderLayout.WEST
-        );
-
-        panel.add(
-                titlePanel,
-                BorderLayout.CENTER
-        );
+        panel.add(backButton, BorderLayout.WEST);
+        panel.add(titlePanel, BorderLayout.CENTER);
 
         return panel;
     }
 
     private JPanel createBottomPanel() {
 
-        JPanel panel =
-                new JPanel(
-                        new FlowLayout(
-                                FlowLayout.CENTER
-                        )
-                );
-
+        JPanel panel = new JPanel(
+                new FlowLayout(FlowLayout.CENTER)
+        );
         panel.setOpaque(false);
 
-        JButton reserveButton =
-                UITheme.createPrimaryButton(
-                        "Reserve Selected Deal"
-                );
+        JButton reserveButton = UITheme.createPrimaryButton(
+                "Reserve Selected Deal"
+        );
 
         reserveButton.addActionListener(
                 e -> reserveSelectedDeal()
         );
 
         panel.add(reserveButton);
-
         return panel;
     }
 
@@ -187,8 +149,7 @@ public class AvailableDealsPanel extends JPanel {
                         "dd/MM/yyyy HH:mm"
                 );
 
-        for (Product product :
-                marketplaceService.getProducts()) {
+        for (Product product : marketplaceService.getProducts()) {
 
             if (!product.isAvailable()) {
                 continue;
@@ -198,31 +159,24 @@ public class AvailableDealsPanel extends JPanel {
             String deadline = "-";
 
             if (product instanceof FoodProduct foodProduct) {
-
-                category =
-                        foodProduct.getCategory();
-
-                deadline =
-                        foodProduct
-                                .getPickupDeadline()
-                                .format(formatter);
+                category = foodProduct.getCategory();
+                deadline = foodProduct
+                        .getPickupDeadline()
+                        .format(formatter);
             }
 
             tableModel.addRow(
                     new Object[] {
                             product.getId(),
                             product.getName(),
-
                             String.format(
                                     "RM %.2f",
                                     product.getOriginalPrice()
                             ),
-
                             String.format(
                                     "RM %.2f",
                                     product.calculateFinalPrice()
                             ),
-
                             product.getQuantity(),
                             category,
                             deadline
@@ -233,8 +187,7 @@ public class AvailableDealsPanel extends JPanel {
 
     private void reserveSelectedDeal() {
 
-        int selectedRow =
-                dealsTable.getSelectedRow();
+        int selectedRow = dealsTable.getSelectedRow();
 
         if (selectedRow == -1) {
 
@@ -248,23 +201,20 @@ public class AvailableDealsPanel extends JPanel {
             return;
         }
 
-        String productId =
-                tableModel
-                        .getValueAt(selectedRow, 0)
-                        .toString();
+        String productId = tableModel
+                .getValueAt(selectedRow, 0)
+                .toString();
 
-        String productName =
-                tableModel
-                        .getValueAt(selectedRow, 1)
-                        .toString();
+        String productName = tableModel
+                .getValueAt(selectedRow, 1)
+                .toString();
 
-        String quantityInput =
-                JOptionPane.showInputDialog(
-                        this,
-                        "Enter quantity to reserve:",
-                        "Reserve " + productName,
-                        JOptionPane.QUESTION_MESSAGE
-                );
+        String quantityInput = JOptionPane.showInputDialog(
+                this,
+                "Enter quantity to reserve:",
+                "Reserve " + productName,
+                JOptionPane.QUESTION_MESSAGE
+        );
 
         if (quantityInput == null) {
             return;
@@ -272,18 +222,16 @@ public class AvailableDealsPanel extends JPanel {
 
         try {
 
-            int quantity =
-                    ValidationUtil.parsePositiveInt(
-                            quantityInput,
-                            "Quantity"
-                    );
+            int quantity = ValidationUtil.parsePositiveInt(
+                    quantityInput,
+                    "Quantity"
+            );
 
-            Order order =
-                    marketplaceService.reserveProduct(
-                            currentCustomer,
-                            productId,
-                            quantity
-                    );
+            Order order = marketplaceService.reserveProduct(
+                    currentCustomer,
+                    productId,
+                    quantity
+            );
 
             FileManager.saveProducts(
                     marketplaceService.getProducts()
@@ -292,6 +240,8 @@ public class AvailableDealsPanel extends JPanel {
             FileManager.saveOrders(
                     marketplaceService.getOrders()
             );
+
+            ActivityLogger.logOrderReserved(order);
 
             JOptionPane.showMessageDialog(
                     this,

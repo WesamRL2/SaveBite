@@ -18,6 +18,7 @@ import javax.swing.table.DefaultTableModel;
 import com.savebite.model.Customer;
 import com.savebite.model.Order;
 import com.savebite.service.MarketplaceService;
+import com.savebite.storage.ActivityLogger;
 import com.savebite.storage.FileManager;
 
 public class MyOrdersPanel extends JPanel {
@@ -34,17 +35,11 @@ public class MyOrdersPanel extends JPanel {
             Customer currentCustomer,
             Runnable backAction) {
 
-        this.marketplaceService =
-                marketplaceService;
-
-        this.currentCustomer =
-                currentCustomer;
-
-        this.backAction =
-                backAction;
+        this.marketplaceService = marketplaceService;
+        this.currentCustomer = currentCustomer;
+        this.backAction = backAction;
 
         setLayout(new BorderLayout(20, 20));
-
         setBackground(UITheme.BACKGROUND);
 
         setBorder(
@@ -65,144 +60,81 @@ public class MyOrdersPanel extends JPanel {
                 "Status"
         };
 
-        tableModel =
-                new DefaultTableModel(
-                        columns,
-                        0
-                ) {
+        tableModel = new DefaultTableModel(columns, 0) {
 
-                    @Override
-                    public boolean isCellEditable(
-                            int row,
-                            int column) {
+            @Override
+            public boolean isCellEditable(
+                    int row,
+                    int column) {
 
-                        return false;
-                    }
-                };
+                return false;
+            }
+        };
 
-        ordersTable =
-                new JTable(tableModel);
+        ordersTable = new JTable(tableModel);
+        UITheme.styleTable(ordersTable);
 
-        UITheme.styleTable(
-                ordersTable
-        );
-
-        JScrollPane scrollPane =
-                new JScrollPane(
-                        ordersTable
-                );
-
+        JScrollPane scrollPane = new JScrollPane(ordersTable);
         scrollPane.setBorder(
-                BorderFactory.createLineBorder(
-                        UITheme.BORDER
-                )
+                BorderFactory.createLineBorder(UITheme.BORDER)
         );
 
-        add(
-                scrollPane,
-                BorderLayout.CENTER
-        );
-
-        add(
-                createBottomPanel(),
-                BorderLayout.SOUTH
-        );
+        add(scrollPane, BorderLayout.CENTER);
+        add(createBottomPanel(), BorderLayout.SOUTH);
 
         refreshOrders();
     }
 
     private JPanel createHeader() {
 
-        JPanel panel =
-                new JPanel(
-                        new BorderLayout()
-                );
-
+        JPanel panel = new JPanel(new BorderLayout());
         panel.setOpaque(false);
 
-        JButton backButton =
-                UITheme.createBackButton();
+        JButton backButton = UITheme.createBackButton();
+        backButton.addActionListener(e -> backAction.run());
 
-        backButton.addActionListener(
-                e -> backAction.run()
+        JLabel title = new JLabel(
+                "My Orders",
+                SwingConstants.CENTER
         );
-
-        JLabel title =
-                new JLabel(
-                        "My Orders",
-                        SwingConstants.CENTER
-                );
-
         title.setFont(UITheme.TITLE_FONT);
         title.setForeground(UITheme.TEXT);
 
-        JLabel subtitle =
-                new JLabel(
-                        "Reservations for "
-                                + currentCustomer.getName(),
-                        SwingConstants.CENTER
-                );
-
+        JLabel subtitle = new JLabel(
+                "Reservations for " + currentCustomer.getName(),
+                SwingConstants.CENTER
+        );
         subtitle.setFont(UITheme.SUBTITLE_FONT);
         subtitle.setForeground(UITheme.MUTED_TEXT);
 
-        JPanel titlePanel =
-                new JPanel(
-                        new BorderLayout()
-                );
-
+        JPanel titlePanel = new JPanel(new BorderLayout());
         titlePanel.setOpaque(false);
+        titlePanel.add(title, BorderLayout.CENTER);
+        titlePanel.add(subtitle, BorderLayout.SOUTH);
 
-        titlePanel.add(
-                title,
-                BorderLayout.CENTER
-        );
-
-        titlePanel.add(
-                subtitle,
-                BorderLayout.SOUTH
-        );
-
-        panel.add(
-                backButton,
-                BorderLayout.WEST
-        );
-
-        panel.add(
-                titlePanel,
-                BorderLayout.CENTER
-        );
+        panel.add(backButton, BorderLayout.WEST);
+        panel.add(titlePanel, BorderLayout.CENTER);
 
         return panel;
     }
 
     private JPanel createBottomPanel() {
 
-        JPanel panel =
-                new JPanel(
-                        new FlowLayout(
-                                FlowLayout.CENTER,
-                                15,
-                                5
-                        )
-                );
-
+        JPanel panel = new JPanel(
+                new FlowLayout(
+                        FlowLayout.CENTER,
+                        15,
+                        5
+                )
+        );
         panel.setOpaque(false);
 
-        JButton collectedButton =
-                UITheme.createPrimaryButton(
-                        "Mark as Collected"
-                );
-
-        JButton cancelButton =
-                new JButton(
-                        "Cancel Order"
-                );
-
-        cancelButton.setFont(
-                UITheme.BUTTON_FONT
+        JButton collectedButton = UITheme.createPrimaryButton(
+                "Mark as Collected"
         );
 
+        JButton cancelButton = new JButton("Cancel Order");
+        cancelButton.setFont(UITheme.BUTTON_FONT);
         cancelButton.setFocusPainted(false);
 
         collectedButton.addActionListener(
@@ -228,8 +160,7 @@ public class MyOrdersPanel extends JPanel {
                         "dd/MM/yyyy HH:mm"
                 );
 
-        for (Order order :
-                marketplaceService.getOrders()) {
+        for (Order order : marketplaceService.getOrders()) {
 
             if (!order
                     .getCustomer()
@@ -237,7 +168,6 @@ public class MyOrdersPanel extends JPanel {
                     .equalsIgnoreCase(
                             currentCustomer.getId()
                     )) {
-
                 continue;
             }
 
@@ -246,20 +176,15 @@ public class MyOrdersPanel extends JPanel {
                             order.getId(),
                             order.getProduct().getName(),
                             order.getQuantity(),
-
                             String.format(
                                     "RM %.2f",
                                     order.getUnitPrice()
                             ),
-
                             String.format(
                                     "RM %.2f",
                                     order.calculateTotal()
                             ),
-
-                            order.getOrderTime()
-                                    .format(formatter),
-
+                            order.getOrderTime().format(formatter),
                             order.getStatus()
                     }
             );
@@ -268,8 +193,7 @@ public class MyOrdersPanel extends JPanel {
 
     private String getSelectedOrderId() {
 
-        int selectedRow =
-                ordersTable.getSelectedRow();
+        int selectedRow = ordersTable.getSelectedRow();
 
         if (selectedRow == -1) {
 
@@ -284,26 +208,19 @@ public class MyOrdersPanel extends JPanel {
         }
 
         return tableModel
-                .getValueAt(
-                        selectedRow,
-                        0
-                )
+                .getValueAt(selectedRow, 0)
                 .toString();
     }
 
     private void markSelectedOrderAsCollected() {
 
-        String orderId =
-                getSelectedOrderId();
+        String orderId = getSelectedOrderId();
 
         if (orderId == null) {
             return;
         }
 
-        boolean success =
-                marketplaceService.collectOrder(
-                        orderId
-                );
+        boolean success = marketplaceService.collectOrder(orderId);
 
         if (!success) {
 
@@ -323,6 +240,12 @@ public class MyOrdersPanel extends JPanel {
                     marketplaceService.getOrders()
             );
 
+            Order order = marketplaceService.findOrderById(orderId);
+
+            if (order != null) {
+                ActivityLogger.logOrderCollected(order);
+            }
+
         } catch (IOException e) {
 
             JOptionPane.showMessageDialog(
@@ -337,9 +260,7 @@ public class MyOrdersPanel extends JPanel {
 
         JOptionPane.showMessageDialog(
                 this,
-                "Order "
-                        + orderId
-                        + " marked as collected.",
+                "Order " + orderId + " marked as collected.",
                 "SaveBite",
                 JOptionPane.INFORMATION_MESSAGE
         );
@@ -347,17 +268,13 @@ public class MyOrdersPanel extends JPanel {
 
     private void cancelSelectedOrder() {
 
-        String orderId =
-                getSelectedOrderId();
+        String orderId = getSelectedOrderId();
 
         if (orderId == null) {
             return;
         }
 
-        boolean success =
-                marketplaceService.cancelOrder(
-                        orderId
-                );
+        boolean success = marketplaceService.cancelOrder(orderId);
 
         if (!success) {
 
@@ -380,6 +297,12 @@ public class MyOrdersPanel extends JPanel {
             FileManager.saveOrders(
                     marketplaceService.getOrders()
             );
+
+            Order order = marketplaceService.findOrderById(orderId);
+
+            if (order != null) {
+                ActivityLogger.logOrderCancelled(order);
+            }
 
         } catch (IOException e) {
 
