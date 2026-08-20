@@ -1,7 +1,7 @@
 package com.savebite.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Font;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
@@ -34,8 +34,15 @@ public class MainFrame extends JFrame {
         );
 
         setSize(
-                1000,
-                650
+                1100,
+                700
+        );
+
+        setMinimumSize(
+                new Dimension(
+                        900,
+                        600
+                )
         );
 
         setDefaultCloseOperation(
@@ -54,6 +61,10 @@ public class MainFrame extends JFrame {
                         new BorderLayout()
                 );
 
+        mainPanel.setBackground(
+                UITheme.BACKGROUND
+        );
+
         mainPanel.add(
                 createHeader(),
                 BorderLayout.NORTH
@@ -62,6 +73,11 @@ public class MainFrame extends JFrame {
         mainPanel.add(
                 createDashboard(),
                 BorderLayout.CENTER
+        );
+
+        mainPanel.add(
+                createFooter(),
+                BorderLayout.SOUTH
         );
 
         setContentPane(mainPanel);
@@ -77,51 +93,96 @@ public class MainFrame extends JFrame {
                         new BorderLayout()
                 );
 
+        panel.setBackground(
+                UITheme.CARD
+        );
+
         panel.setBorder(
-                BorderFactory.createEmptyBorder(
-                        20,
-                        20,
-                        20,
-                        20
+                BorderFactory.createCompoundBorder(
+
+                        BorderFactory.createMatteBorder(
+                                0,
+                                0,
+                                1,
+                                0,
+                                UITheme.BORDER
+                        ),
+
+                        BorderFactory.createEmptyBorder(
+                                25,
+                                50,
+                                25,
+                                50
+                        )
                 )
         );
 
+        JPanel brandPanel =
+                new JPanel(
+                        new BorderLayout()
+                );
+
+        brandPanel.setOpaque(false);
+
         JLabel title =
                 new JLabel(
-                        "SaveBite",
-                        SwingConstants.CENTER
+                        "SaveBite"
                 );
 
         title.setFont(
-                new Font(
-                        "Arial",
-                        Font.BOLD,
-                        30
-                )
+                UITheme.TITLE_FONT
+        );
+
+        title.setForeground(
+                UITheme.PRIMARY
         );
 
         JLabel subtitle =
                 new JLabel(
-                        "Reduce Food Waste. Save Money.",
-                        SwingConstants.CENTER
+                        "Save food. Save money. Reduce waste."
                 );
 
         subtitle.setFont(
-                new Font(
-                        "Arial",
-                        Font.PLAIN,
-                        16
-                )
+                UITheme.SUBTITLE_FONT
         );
 
-        panel.add(
+        subtitle.setForeground(
+                UITheme.MUTED_TEXT
+        );
+
+        brandPanel.add(
                 title,
-                BorderLayout.CENTER
+                BorderLayout.NORTH
         );
 
-        panel.add(
+        brandPanel.add(
                 subtitle,
                 BorderLayout.SOUTH
+        );
+
+        JLabel userLabel =
+                new JLabel(
+                        "Welcome, "
+                                + currentCustomer.getName(),
+                        SwingConstants.RIGHT
+                );
+
+        userLabel.setFont(
+                UITheme.BUTTON_FONT
+        );
+
+        userLabel.setForeground(
+                UITheme.TEXT
+        );
+
+        panel.add(
+                brandPanel,
+                BorderLayout.WEST
+        );
+
+        panel.add(
+                userLabel,
+                BorderLayout.EAST
         );
 
         return panel;
@@ -129,43 +190,114 @@ public class MainFrame extends JFrame {
 
     private JPanel createDashboard() {
 
-        JPanel panel =
+        JPanel wrapper =
+                new JPanel(
+                        new BorderLayout()
+                );
+
+        wrapper.setBackground(
+                UITheme.BACKGROUND
+        );
+
+        wrapper.setBorder(
+                BorderFactory.createEmptyBorder(
+                        45,
+                        80,
+                        45,
+                        80
+                )
+        );
+
+        JPanel headingPanel =
+                new JPanel(
+                        new BorderLayout()
+                );
+
+        headingPanel.setOpaque(false);
+
+        JLabel heading =
+                new JLabel(
+                        "What would you like to do?"
+                );
+
+        heading.setFont(
+                new java.awt.Font(
+                        "Segoe UI",
+                        java.awt.Font.BOLD,
+                        24
+                )
+        );
+
+        heading.setForeground(
+                UITheme.TEXT
+        );
+
+        JLabel description =
+                new JLabel(
+                        "Manage surplus food and help reduce unnecessary waste."
+                );
+
+        description.setFont(
+                UITheme.SUBTITLE_FONT
+        );
+
+        description.setForeground(
+                UITheme.MUTED_TEXT
+        );
+
+        headingPanel.add(
+                heading,
+                BorderLayout.NORTH
+        );
+
+        headingPanel.add(
+                description,
+                BorderLayout.SOUTH
+        );
+
+        JPanel buttonPanel =
                 new JPanel(
                         new GridLayout(
                                 2,
                                 2,
-                                20,
-                                20
+                                25,
+                                25
                         )
                 );
 
-        panel.setBorder(
+        buttonPanel.setOpaque(false);
+
+        buttonPanel.setBorder(
                 BorderFactory.createEmptyBorder(
-                        40,
-                        100,
-                        80,
-                        100
+                        35,
+                        0,
+                        20,
+                        0
                 )
         );
 
         JButton dealsButton =
-                createMenuButton(
-                        "Available Deals"
+                createDashboardButton(
+                        "Available Deals",
+                        "Browse discounted surplus food"
                 );
 
         JButton addProductButton =
-                createMenuButton(
-                        "Add Surplus Product"
+                createDashboardButton(
+                        "Add Surplus Product",
+                        "List food before it goes to waste"
                 );
 
         JButton ordersButton =
-                createMenuButton(
-                        "My Orders"
+                createDashboardButton(
+                        "My Orders",
+                        "View and manage reservations"
                 );
 
         JButton statisticsButton =
-                createMenuButton(
-                        "Statistics"
+                createDashboardButton(
+                        "Statistics",
+                        "View sustainability impact"
                 );
 
         dealsButton.addActionListener(
@@ -184,31 +316,90 @@ public class MainFrame extends JFrame {
                 e -> showStatistics()
         );
 
-        panel.add(dealsButton);
-        panel.add(addProductButton);
-        panel.add(ordersButton);
-        panel.add(statisticsButton);
+        buttonPanel.add(dealsButton);
+        buttonPanel.add(addProductButton);
+        buttonPanel.add(ordersButton);
+        buttonPanel.add(statisticsButton);
 
-        return panel;
+        wrapper.add(
+                headingPanel,
+                BorderLayout.NORTH
+        );
+
+        wrapper.add(
+                buttonPanel,
+                BorderLayout.CENTER
+        );
+
+        return wrapper;
     }
 
-    private JButton createMenuButton(
-            String text) {
+    private JButton createDashboardButton(
+            String title,
+            String description) {
 
         JButton button =
-                new JButton(text);
+                UITheme.createPrimaryButton(
+                        "<html><center>"
+                                + title
+                                + "<br>"
+                                + "<span style='font-size:10px;'>"
+                                + description
+                                + "</span>"
+                                + "</center></html>"
+                );
 
-        button.setFont(
-                new Font(
-                        "Arial",
-                        Font.BOLD,
-                        18
+        return button;
+    }
+
+    private JPanel createFooter() {
+
+        JPanel panel =
+                new JPanel(
+                        new BorderLayout()
+                );
+
+        panel.setBackground(
+                UITheme.CARD
+        );
+
+        panel.setBorder(
+                BorderFactory.createCompoundBorder(
+
+                        BorderFactory.createMatteBorder(
+                                1,
+                                0,
+                                0,
+                                0,
+                                UITheme.BORDER
+                        ),
+
+                        BorderFactory.createEmptyBorder(
+                                12,
+                                20,
+                                12,
+                                20
+                        )
                 )
         );
 
-        button.setFocusPainted(false);
+        JLabel label =
+                new JLabel(
+                        "Supporting SDG 12 - Responsible Consumption and Production",
+                        SwingConstants.CENTER
+                );
 
-        return button;
+        label.setFont(
+                UITheme.NORMAL_FONT
+        );
+
+        label.setForeground(
+                UITheme.MUTED_TEXT
+        );
+
+        panel.add(label);
+
+        return panel;
     }
 
     private void showAvailableDeals() {
