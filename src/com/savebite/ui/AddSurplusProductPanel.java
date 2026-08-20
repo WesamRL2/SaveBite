@@ -1,7 +1,6 @@
 package com.savebite.ui;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -23,8 +22,7 @@ import com.savebite.service.MarketplaceService;
 import com.savebite.storage.FileManager;
 import com.savebite.util.ValidationUtil;
 
-public class AddSurplusProductPanel
-        extends JPanel {
+public class AddSurplusProductPanel extends JPanel {
 
     private final MarketplaceService marketplaceService;
     private final Runnable backAction;
@@ -47,55 +45,33 @@ public class AddSurplusProductPanel
         this.backAction =
                 backAction;
 
-        setLayout(
-                new BorderLayout(
-                        10,
-                        10
-                )
-        );
+        setLayout(new BorderLayout(20, 20));
+
+        setBackground(UITheme.BACKGROUND);
 
         setBorder(
                 BorderFactory.createEmptyBorder(
-                        20,
-                        20,
-                        20,
-                        20
+                        25, 35, 30, 35
                 )
         );
 
-        add(
-                createTopPanel(),
-                BorderLayout.NORTH
-        );
-
-        add(
-                createFormPanel(),
-                BorderLayout.CENTER
-        );
+        add(createHeader(), BorderLayout.NORTH);
+        add(createFormCard(), BorderLayout.CENTER);
     }
 
-    private JPanel createTopPanel() {
+    private JPanel createHeader() {
 
         JPanel panel =
-                new JPanel(
-                        new BorderLayout()
-                );
+                new JPanel(new BorderLayout());
+
+        panel.setOpaque(false);
 
         JButton backButton =
-                new JButton("Back");
+                UITheme.createBackButton();
 
         backButton.addActionListener(
                 e -> backAction.run()
         );
-
-        JPanel leftPanel =
-                new JPanel(
-                        new FlowLayout(
-                                FlowLayout.LEFT
-                        )
-                );
-
-        leftPanel.add(backButton);
 
         JLabel title =
                 new JLabel(
@@ -103,25 +79,76 @@ public class AddSurplusProductPanel
                         SwingConstants.CENTER
                 );
 
-        title.setFont(
-                new Font(
-                        "Arial",
-                        Font.BOLD,
-                        24
-                )
-        );
+        title.setFont(UITheme.TITLE_FONT);
+        title.setForeground(UITheme.TEXT);
 
-        panel.add(
-                leftPanel,
-                BorderLayout.WEST
-        );
+        JLabel subtitle =
+                new JLabel(
+                        "List unsold food before the end of the day.",
+                        SwingConstants.CENTER
+                );
 
-        panel.add(
+        subtitle.setFont(UITheme.SUBTITLE_FONT);
+        subtitle.setForeground(UITheme.MUTED_TEXT);
+
+        JPanel titlePanel =
+                new JPanel(new BorderLayout());
+
+        titlePanel.setOpaque(false);
+
+        titlePanel.add(
                 title,
                 BorderLayout.CENTER
         );
 
+        titlePanel.add(
+                subtitle,
+                BorderLayout.SOUTH
+        );
+
+        panel.add(
+                backButton,
+                BorderLayout.WEST
+        );
+
+        panel.add(
+                titlePanel,
+                BorderLayout.CENTER
+        );
+
         return panel;
+    }
+
+    private JPanel createFormCard() {
+
+        JPanel wrapper =
+                new JPanel(
+                        new GridBagLayout()
+                );
+
+        wrapper.setOpaque(false);
+
+        JPanel card =
+                createFormPanel();
+
+        card.setBackground(UITheme.CARD);
+
+        card.setBorder(
+                BorderFactory.createCompoundBorder(
+
+                        BorderFactory.createLineBorder(
+                                UITheme.BORDER
+                        ),
+
+                        BorderFactory.createEmptyBorder(
+                                30, 45, 30, 45
+                        )
+                )
+        );
+
+        wrapper.add(card);
+
+        return wrapper;
     }
 
     private JPanel createFormPanel() {
@@ -131,55 +158,39 @@ public class AddSurplusProductPanel
                         new GridBagLayout()
                 );
 
+        panel.setOpaque(false);
+
         GridBagConstraints gbc =
                 new GridBagConstraints();
 
         gbc.insets =
                 new Insets(
-                        8,
-                        8,
-                        8,
-                        8
+                        8, 10, 8, 10
                 );
 
         gbc.fill =
                 GridBagConstraints.HORIZONTAL;
 
         sellerIdField =
-                new JTextField(
-                        "S001",
-                        20
-                );
+                createField("S001");
 
         nameField =
-                new JTextField(
-                        20
-                );
+                createField("");
 
         originalPriceField =
-                new JTextField(
-                        20
-                );
+                createField("");
 
         quantityField =
-                new JTextField(
-                        20
-                );
+                createField("");
 
         categoryField =
-                new JTextField(
-                        20
-                );
+                createField("");
 
         discountField =
-                new JTextField(
-                        20
-                );
+                createField("");
 
         pickupHoursField =
-                new JTextField(
-                        20
-                );
+                createField("");
 
         int row = 0;
 
@@ -187,7 +198,7 @@ public class AddSurplusProductPanel
                 panel,
                 gbc,
                 row++,
-                "Seller ID:",
+                "Seller ID",
                 sellerIdField
         );
 
@@ -195,7 +206,7 @@ public class AddSurplusProductPanel
                 panel,
                 gbc,
                 row++,
-                "Product Name:",
+                "Product Name",
                 nameField
         );
 
@@ -203,7 +214,7 @@ public class AddSurplusProductPanel
                 panel,
                 gbc,
                 row++,
-                "Original Price (RM):",
+                "Original Price (RM)",
                 originalPriceField
         );
 
@@ -211,7 +222,7 @@ public class AddSurplusProductPanel
                 panel,
                 gbc,
                 row++,
-                "Quantity:",
+                "Quantity",
                 quantityField
         );
 
@@ -219,7 +230,7 @@ public class AddSurplusProductPanel
                 panel,
                 gbc,
                 row++,
-                "Category:",
+                "Category",
                 categoryField
         );
 
@@ -227,7 +238,7 @@ public class AddSurplusProductPanel
                 panel,
                 gbc,
                 row++,
-                "Discount (%):",
+                "Discount (%)",
                 discountField
         );
 
@@ -235,22 +246,14 @@ public class AddSurplusProductPanel
                 panel,
                 gbc,
                 row++,
-                "Pickup Within (Hours):",
+                "Pickup Within (Hours)",
                 pickupHoursField
         );
 
         JButton addButton =
-                new JButton(
+                UITheme.createPrimaryButton(
                         "Add Product"
                 );
-
-        addButton.setFont(
-                new Font(
-                        "Arial",
-                        Font.BOLD,
-                        16
-                )
-        );
 
         addButton.addActionListener(
                 e -> addProduct()
@@ -260,12 +263,28 @@ public class AddSurplusProductPanel
         gbc.gridy = row;
         gbc.gridwidth = 2;
 
-        panel.add(
-                addButton,
-                gbc
-        );
+        gbc.insets =
+                new Insets(
+                        20, 10, 5, 10
+                );
+
+        panel.add(addButton, gbc);
 
         return panel;
+    }
+
+    private JTextField createField(
+            String text) {
+
+        JTextField field =
+                new JTextField(
+                        text,
+                        22
+                );
+
+        field.setFont(UITheme.NORMAL_FONT);
+
+        return field;
     }
 
     private void addFormRow(
@@ -273,24 +292,31 @@ public class AddSurplusProductPanel
             GridBagConstraints gbc,
             int row,
             String labelText,
-            JTextField textField) {
+            JTextField field) {
+
+        JLabel label =
+                new JLabel(labelText);
+
+        label.setFont(
+                new Font(
+                        "Segoe UI",
+                        Font.BOLD,
+                        14
+                )
+        );
+
+        label.setForeground(UITheme.TEXT);
 
         gbc.gridwidth = 1;
 
         gbc.gridx = 0;
         gbc.gridy = row;
 
-        panel.add(
-                new JLabel(labelText),
-                gbc
-        );
+        panel.add(label, gbc);
 
         gbc.gridx = 1;
 
-        panel.add(
-                textField,
-                gbc
-        );
+        panel.add(field, gbc);
     }
 
     private void addProduct() {
@@ -339,8 +365,7 @@ public class AddSurplusProductPanel
                     );
 
             String productId =
-                    marketplaceService
-                            .generateProductId();
+                    marketplaceService.generateProductId();
 
             Product product =
                     new FoodProduct(
@@ -351,18 +376,16 @@ public class AddSurplusProductPanel
                             sellerId,
                             category,
                             discount,
-                            LocalDateTime
-                                    .now()
+                            LocalDateTime.now()
                                     .plusHours(
                                             pickupHours
                                     )
                     );
 
             boolean added =
-                    marketplaceService
-                            .addProduct(
-                                    product
-                            );
+                    marketplaceService.addProduct(
+                            product
+                    );
 
             if (!added) {
 
@@ -374,8 +397,7 @@ public class AddSurplusProductPanel
             try {
 
                 FileManager.saveProducts(
-                        marketplaceService
-                                .getProducts()
+                        marketplaceService.getProducts()
                 );
 
             } catch (IOException e) {

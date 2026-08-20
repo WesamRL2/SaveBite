@@ -27,47 +27,30 @@ public class StatisticsPanel extends JPanel {
         this.backAction =
                 backAction;
 
-        setLayout(
-                new BorderLayout(
-                        20,
-                        20
-                )
-        );
+        setLayout(new BorderLayout(20, 20));
+
+        setBackground(UITheme.BACKGROUND);
 
         setBorder(
                 BorderFactory.createEmptyBorder(
-                        20,
-                        20,
-                        20,
-                        20
+                        25, 35, 25, 35
                 )
         );
 
-        add(
-                createHeader(),
-                BorderLayout.NORTH
-        );
-
-        add(
-                createStatisticsGrid(),
-                BorderLayout.CENTER
-        );
-
-        add(
-                createFooter(),
-                BorderLayout.SOUTH
-        );
+        add(createHeader(), BorderLayout.NORTH);
+        add(createStatisticsGrid(), BorderLayout.CENTER);
+        add(createFooter(), BorderLayout.SOUTH);
     }
 
     private JPanel createHeader() {
 
         JPanel panel =
-                new JPanel(
-                        new BorderLayout()
-                );
+                new JPanel(new BorderLayout());
+
+        panel.setOpaque(false);
 
         JButton backButton =
-                new JButton("Back");
+                UITheme.createBackButton();
 
         backButton.addActionListener(
                 e -> backAction.run()
@@ -75,16 +58,35 @@ public class StatisticsPanel extends JPanel {
 
         JLabel title =
                 new JLabel(
-                        "SaveBite Sustainability Statistics",
+                        "Sustainability Impact",
                         SwingConstants.CENTER
                 );
 
-        title.setFont(
-                new Font(
-                        "Arial",
-                        Font.BOLD,
-                        26
-                )
+        title.setFont(UITheme.TITLE_FONT);
+        title.setForeground(UITheme.TEXT);
+
+        JLabel subtitle =
+                new JLabel(
+                        "See how SaveBite reduces food waste and recovers value.",
+                        SwingConstants.CENTER
+                );
+
+        subtitle.setFont(UITheme.SUBTITLE_FONT);
+        subtitle.setForeground(UITheme.MUTED_TEXT);
+
+        JPanel titlePanel =
+                new JPanel(new BorderLayout());
+
+        titlePanel.setOpaque(false);
+
+        titlePanel.add(
+                title,
+                BorderLayout.CENTER
+        );
+
+        titlePanel.add(
+                subtitle,
+                BorderLayout.SOUTH
         );
 
         panel.add(
@@ -93,7 +95,7 @@ public class StatisticsPanel extends JPanel {
         );
 
         panel.add(
-                title,
+                titlePanel,
                 BorderLayout.CENTER
         );
 
@@ -112,12 +114,11 @@ public class StatisticsPanel extends JPanel {
                         )
                 );
 
+        panel.setOpaque(false);
+
         panel.setBorder(
                 BorderFactory.createEmptyBorder(
-                        30,
-                        40,
-                        30,
-                        40
+                        25, 15, 25, 15
                 )
         );
 
@@ -214,20 +215,25 @@ public class StatisticsPanel extends JPanel {
         JPanel card =
                 new JPanel(
                         new BorderLayout(
-                                5,
-                                5
+                                8,
+                                8
                         )
                 );
 
+        card.setBackground(UITheme.CARD);
+
         card.setBorder(
                 BorderFactory.createCompoundBorder(
-                        BorderFactory.createEtchedBorder(),
+
+                        BorderFactory.createLineBorder(
+                                UITheme.BORDER
+                        ),
 
                         BorderFactory.createEmptyBorder(
-                                20,
-                                15,
-                                20,
-                                15
+                                25,
+                                12,
+                                25,
+                                12
                         )
                 )
         );
@@ -240,10 +246,14 @@ public class StatisticsPanel extends JPanel {
 
         titleLabel.setFont(
                 new Font(
-                        "Arial",
+                        "Segoe UI",
                         Font.BOLD,
-                        15
+                        14
                 )
+        );
+
+        titleLabel.setForeground(
+                UITheme.MUTED_TEXT
         );
 
         JLabel valueLabel =
@@ -254,10 +264,14 @@ public class StatisticsPanel extends JPanel {
 
         valueLabel.setFont(
                 new Font(
-                        "Arial",
+                        "Segoe UI",
                         Font.BOLD,
-                        26
+                        28
                 )
+        );
+
+        valueLabel.setForeground(
+                UITheme.PRIMARY
         );
 
         card.add(
@@ -276,22 +290,20 @@ public class StatisticsPanel extends JPanel {
     private JPanel createFooter() {
 
         JPanel panel =
-                new JPanel(
-                        new BorderLayout()
-                );
+                new JPanel(new BorderLayout());
+
+        panel.setOpaque(false);
 
         JLabel sdgLabel =
                 new JLabel(
-                        "Supporting SDG 12 - Responsible Consumption and Production",
+                        "SDG 12 - Responsible Consumption and Production",
                         SwingConstants.CENTER
                 );
 
-        sdgLabel.setFont(
-                new Font(
-                        "Arial",
-                        Font.PLAIN,
-                        15
-                )
+        sdgLabel.setFont(UITheme.NORMAL_FONT);
+
+        sdgLabel.setForeground(
+                UITheme.MUTED_TEXT
         );
 
         panel.add(

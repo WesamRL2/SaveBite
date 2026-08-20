@@ -2,7 +2,6 @@ package com.savebite.ui;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
@@ -44,26 +43,17 @@ public class MyOrdersPanel extends JPanel {
         this.backAction =
                 backAction;
 
-        setLayout(
-                new BorderLayout(
-                        10,
-                        10
-                )
-        );
+        setLayout(new BorderLayout(20, 20));
+
+        setBackground(UITheme.BACKGROUND);
 
         setBorder(
                 BorderFactory.createEmptyBorder(
-                        20,
-                        20,
-                        20,
-                        20
+                        25, 35, 30, 35
                 )
         );
 
-        add(
-                createTopPanel(),
-                BorderLayout.NORTH
-        );
+        add(createHeader(), BorderLayout.NORTH);
 
         String[] columns = {
                 "Order ID",
@@ -91,28 +81,25 @@ public class MyOrdersPanel extends JPanel {
                 };
 
         ordersTable =
-                new JTable(
-                        tableModel
-                );
+                new JTable(tableModel);
 
-        ordersTable.setRowHeight(
-                30
+        UITheme.styleTable(
+                ordersTable
         );
 
-        ordersTable
-                .getTableHeader()
-                .setFont(
-                        new Font(
-                                "Arial",
-                                Font.BOLD,
-                                14
-                        )
-                );
-
-        add(
+        JScrollPane scrollPane =
                 new JScrollPane(
                         ordersTable
-                ),
+                );
+
+        scrollPane.setBorder(
+                BorderFactory.createLineBorder(
+                        UITheme.BORDER
+                )
+        );
+
+        add(
+                scrollPane,
                 BorderLayout.CENTER
         );
 
@@ -124,54 +111,65 @@ public class MyOrdersPanel extends JPanel {
         refreshOrders();
     }
 
-    private JPanel createTopPanel() {
+    private JPanel createHeader() {
 
         JPanel panel =
                 new JPanel(
                         new BorderLayout()
                 );
 
+        panel.setOpaque(false);
+
         JButton backButton =
-                new JButton("Back");
+                UITheme.createBackButton();
 
         backButton.addActionListener(
                 e -> backAction.run()
         );
 
-        JPanel leftPanel =
-                new JPanel(
-                        new FlowLayout(
-                                FlowLayout.LEFT
-                        )
-                );
-
-        leftPanel.add(
-                backButton
-        );
-
         JLabel title =
                 new JLabel(
-                        "My Orders - "
-                                + currentCustomer
-                                        .getName(),
+                        "My Orders",
                         SwingConstants.CENTER
                 );
 
-        title.setFont(
-                new Font(
-                        "Arial",
-                        Font.BOLD,
-                        24
-                )
+        title.setFont(UITheme.TITLE_FONT);
+        title.setForeground(UITheme.TEXT);
+
+        JLabel subtitle =
+                new JLabel(
+                        "Reservations for "
+                                + currentCustomer.getName(),
+                        SwingConstants.CENTER
+                );
+
+        subtitle.setFont(UITheme.SUBTITLE_FONT);
+        subtitle.setForeground(UITheme.MUTED_TEXT);
+
+        JPanel titlePanel =
+                new JPanel(
+                        new BorderLayout()
+                );
+
+        titlePanel.setOpaque(false);
+
+        titlePanel.add(
+                title,
+                BorderLayout.CENTER
+        );
+
+        titlePanel.add(
+                subtitle,
+                BorderLayout.SOUTH
         );
 
         panel.add(
-                leftPanel,
+                backButton,
                 BorderLayout.WEST
         );
 
         panel.add(
-                title,
+                titlePanel,
                 BorderLayout.CENTER
         );
 
@@ -183,12 +181,16 @@ public class MyOrdersPanel extends JPanel {
         JPanel panel =
                 new JPanel(
                         new FlowLayout(
-                                FlowLayout.CENTER
+                                FlowLayout.CENTER,
+                                15,
+                                5
                         )
                 );
 
+        panel.setOpaque(false);
+
         JButton collectedButton =
-                new JButton(
+                UITheme.createPrimaryButton(
                         "Mark as Collected"
                 );
 
@@ -196,6 +198,12 @@ public class MyOrdersPanel extends JPanel {
                 new JButton(
                         "Cancel Order"
                 );
+
+        cancelButton.setFont(
+                UITheme.BUTTON_FONT
+        );
+
+        cancelButton.setFocusPainted(false);
 
         collectedButton.addActionListener(
                 e -> markSelectedOrderAsCollected()
@@ -205,13 +213,8 @@ public class MyOrdersPanel extends JPanel {
                 e -> cancelSelectedOrder()
         );
 
-        panel.add(
-                collectedButton
-        );
-
-        panel.add(
-                cancelButton
-        );
+        panel.add(collectedButton);
+        panel.add(cancelButton);
 
         return panel;
     }
@@ -241,11 +244,7 @@ public class MyOrdersPanel extends JPanel {
             tableModel.addRow(
                     new Object[] {
                             order.getId(),
-
-                            order
-                                    .getProduct()
-                                    .getName(),
-
+                            order.getProduct().getName(),
                             order.getQuantity(),
 
                             String.format(
@@ -258,11 +257,8 @@ public class MyOrdersPanel extends JPanel {
                                     order.calculateTotal()
                             ),
 
-                            order
-                                    .getOrderTime()
-                                    .format(
-                                            formatter
-                                    ),
+                            order.getOrderTime()
+                                    .format(formatter),
 
                             order.getStatus()
                     }
@@ -273,8 +269,7 @@ public class MyOrdersPanel extends JPanel {
     private String getSelectedOrderId() {
 
         int selectedRow =
-                ordersTable
-                        .getSelectedRow();
+                ordersTable.getSelectedRow();
 
         if (selectedRow == -1) {
 
@@ -306,10 +301,9 @@ public class MyOrdersPanel extends JPanel {
         }
 
         boolean success =
-                marketplaceService
-                        .collectOrder(
-                                orderId
-                        );
+                marketplaceService.collectOrder(
+                        orderId
+                );
 
         if (!success) {
 
@@ -326,8 +320,7 @@ public class MyOrdersPanel extends JPanel {
         try {
 
             FileManager.saveOrders(
-                    marketplaceService
-                            .getOrders()
+                    marketplaceService.getOrders()
             );
 
         } catch (IOException e) {
@@ -362,10 +355,9 @@ public class MyOrdersPanel extends JPanel {
         }
 
         boolean success =
-                marketplaceService
-                        .cancelOrder(
-                                orderId
-                        );
+                marketplaceService.cancelOrder(
+                        orderId
+                );
 
         if (!success) {
 
@@ -382,13 +374,11 @@ public class MyOrdersPanel extends JPanel {
         try {
 
             FileManager.saveProducts(
-                    marketplaceService
-                            .getProducts()
+                    marketplaceService.getProducts()
             );
 
             FileManager.saveOrders(
-                    marketplaceService
-                            .getOrders()
+                    marketplaceService.getOrders()
             );
 
         } catch (IOException e) {
@@ -407,7 +397,7 @@ public class MyOrdersPanel extends JPanel {
                 this,
                 "Order "
                         + orderId
-                        + " cancelled. The quantity was returned to available stock.",
+                        + " cancelled. Quantity returned to stock.",
                 "SaveBite",
                 JOptionPane.INFORMATION_MESSAGE
         );
